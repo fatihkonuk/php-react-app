@@ -15,3 +15,14 @@ bower_components
 psd
 thumb
 sketch
+
+### php ###
+
+.idea/
+.vscode/
+coverage/
+vendor/
+logs/*
+!/logs/README.md
+.phpunit.result.cache
+
