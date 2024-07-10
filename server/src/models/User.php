@@ -11,16 +11,95 @@ class User
 
     public function find()
     {
-        $stmt = $this->db->prepare('SELECT * FROM users');
+        $stmt = $this->db->prepare('
+            SELECT 
+                users.*, 
+                addresses.street, addresses.suite, addresses.city, addresses.zipcode, addresses.geo_lat, addresses.geo_lng,
+                companies.name as company_name, companies.catchPhrase, companies.bs
+            FROM users
+            LEFT JOIN addresses ON users.id = addresses.userId
+            LEFT JOIN companies ON users.id = companies.userId
+        ');
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = [];
+
+        foreach ($users as $user) {
+            $userId = $user['id'];
+            if (!isset($result[$userId])) {
+                $result[$userId] = [
+                    'id' => $user['id'],
+                    'name' => $user['name'],
+                    'username' => $user['username'],
+                    'email' => $user['email'],
+                    'phone' => $user['phone'],
+                    'website' => $user['website'],
+                    'address' => [
+                        'street' => $user['street'],
+                        'suite' => $user['suite'],
+                        'city' => $user['city'],
+                        'zipcode' => $user['zipcode'],
+                        'geo' => [
+                            'lat' => $user['geo_lat'],
+                            'lng' => $user['geo_lng']
+                        ]
+                    ],
+                    'company' => [
+                        'name' => $user['company_name'],
+                        'catchPhrase' => $user['catchPhrase'],
+                        'bs' => $user['bs']
+                    ]
+                ];
+            }
+        }
+
+        return array_values($result);
     }
 
     public function findById($id)
     {
-        $stmt = $this->db->prepare('SELECT * FROM users WHERE id = ?');
+        $stmt = $this->db->prepare('
+            SELECT 
+                users.*, 
+                addresses.street, addresses.suite, addresses.city, addresses.zipcode, addresses.geo_lat, addresses.geo_lng,
+                companies.name as company_name, companies.catchPhrase, companies.bs
+            FROM users
+            LEFT JOIN addresses ON users.id = addresses.userId
+            LEFT JOIN companies ON users.id = companies.userId
+            WHERE users.id = ?
+        ');
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_OBJ);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) {
+            $result = [
+                'id' => $user['id'],
+                'name' => $user['name'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'phone' => $user['phone'],
+                'website' => $user['website'],
+                'address' => [
+                    'street' => $user['street'],
+                    'suite' => $user['suite'],
+                    'city' => $user['city'],
+                    'zipcode' => $user['zipcode'],
+                    'geo' => [
+                        'lat' => $user['geo_lat'],
+                        'lng' => $user['geo_lng']
+                    ]
+                ],
+                'company' => [
+                    'name' => $user['company_name'],
+                    'catchPhrase' => $user['catchPhrase'],
+                    'bs' => $user['bs']
+                ]
+            ];
+
+            return $result;
+        }
+
+        return null;
     }
 
     public function create($user)

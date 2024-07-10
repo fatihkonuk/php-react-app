@@ -18,5 +18,6 @@ $app->get('/', function (Request $request, Response $response, array $args) {
 });
 
 require __DIR__ . '/../src/routes/user.routes.php';
+require __DIR__ . '/../src/routes/post.routes.php';
 
 $app->run();
