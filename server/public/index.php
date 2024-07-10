@@ -14,22 +14,9 @@ $dotenv->load();
 $app = AppFactory::create();
 
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $db = new Db();
-
-    try {
-        $db = $db->connect();
-        $response->getBody()->write("database connected");
-        return $response;
-    } catch (PDOException $e) {
-        $response->getBody()->write(
-            json_encode(array(
-                "error" => $e->getMessage(),
-                "code" => $e->getCode()
-            ))
-        );
-        return $response
-            ->withHeader('Content-Type', 'application/json');
-    }
+    $response->getBody()->write('hello world');
 });
+
+require __DIR__ . '/../src/routes/user.routes.php';
 
 $app->run();
