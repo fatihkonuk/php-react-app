@@ -11,9 +11,35 @@ class Post
 
     public function find()
     {
-        $stmt = $this->db->prepare('SELECT * FROM posts');
+        $stmt = $this->db->prepare('
+            SELECT 
+                posts.id,
+                posts.title,
+                posts.body,
+                users.id as user_id,
+                users.username,
+                users.email
+            FROM posts
+            LEFT JOIN users ON posts.userId = users.id
+        ');
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = [];
+
+        foreach ($posts as $post) {
+            $result[] = [
+                'id' => $post['id'],
+                'title' => $post['title'],
+                'body' => $post['body'],
+                'user' => [
+                    'id' => $post['user_id'],
+                    'username' => $post['username'],
+                    'email' => $post['email'],
+                ],
+            ];
+        }
+
+        return array_values($result);
     }
 
     public function findById($id)

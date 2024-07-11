@@ -118,10 +118,10 @@ $app->group('/api/posts', function (RouteCollectorProxy $group) {
             $success = $postModel->deleteById($id);
 
             if (!$success) {
-                return jsonResponse($response, null, 'Post not successfuly', 404);
+                return jsonResponse($response, null, 'Post not found', 404);
             }
 
-            return jsonResponse($response, null, 'Post deleted found');
+            return jsonResponse($response, null, 'Post deleted successfuly');
         } catch (PDOException $e) {
             return handleError($response, $e);
         }
