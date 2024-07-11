@@ -110,4 +110,25 @@ $app->group('/api/users', function (RouteCollectorProxy $group) {
             return handleError($response, $e);
         }
     })->setName('delete-user-by-id');
+
+    $group->post('/insert-json', function ($request, $response, array $args) {
+        try {
+            $db = new Db();
+            $db = $db->connect();
+            $userModel = new User($db);
+
+            $users_url = "https://jsonplaceholder.typicode.com/users";
+
+            $users_json = file_get_contents($users_url);
+
+            // JSON verilerini diziye çevir
+            $users_data = json_decode($users_json, true);
+
+            $userModel->insertMany($users_data);
+            $message = sizeof($users_data) . ' User created successfuly';
+            return jsonResponse($response, null, $message, 201);
+        } catch (PDOException $e) {
+            return handleError($response, $e);
+        }
+    })->setName('insert-many-user');
 });
